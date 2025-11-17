@@ -1,0 +1,79 @@
+<?php
+// Configuración de la base de datos
+$servername = "localhost"; // Cambia esto si es necesario
+$username = "root";
+$password = "12345678";
+$dbname = "comentarios_db";
+
+// Crear conexión
+$conn = new mysqli($servername, $username, $password, $dbname);
+
+// Verificar conexión
+if ($conn->connect_error) {
+    die("Conexión fallida: " . $conn->connect_error);
+}
+
+// Manejo del formulario
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    $nombre = $_POST['nombre'];
+    $telefono = $_POST['telefono'];
+    $email = $_POST['email'];
+    $comentario = $_POST['comentario'];
+
+    // Preparar y vincular
+    $stmt = $conn->prepare("INSERT INTO comentarios (nombre, telefono, email, comentario) VALUES (?, ?, ?, ?)");
+    $stmt->bind_param("ssss", $nombre, $telefono, $email, $comentario);
+
+    // Ejecutar la consulta
+    if ($stmt->execute()) {
+        echo "Comentario enviado con éxito.";
+    } else {
+        echo "Error al enviar el comentario: " . $stmt->error;
+    }
+
+    // Cerrar la declaración
+    $stmt->close();
+}
+
+// Cerrar conexión
+$conn->close();
+?>
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contacto - Mi Página Web</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <h1>Bienvenido a Mi Página Web</h1>
+        <nav>
+            <ul class="menu">
+                <li><a href="inicio.php">Inicio</a></li>
+                <li><a href="productos.php">Productos</a></li>
+                <li><a href="servicios.php">Servicios</a></li>
+                <li><a href="blog.php">Blog</a></li>
+                <li><a href="galeria.php">Galería</a></li>
+                <li><a href="contacto.php">Contacto</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <section>
+        <h2>Contacto</h2>
+        <div class="comment-form">
+            <h3>Déjanos tu comentario</h3>
+            <form method="POST" action="">
+                <input type="text" name="nombre" placeholder="Tu nombre" required><br><br>
+                <input type="tel" name="telefono" placeholder="Tu teléfono" required><br>
+                <input type="email" name="email" placeholder="Tu email" required><br>
+                <textarea name="comentario" placeholder="Escribe tu comentario aquí..." required></textarea><br><br>
+                <button type="submit">Enviar</button>
+            </form>
+        </div>
+    </section>
+</body>
+</html>
